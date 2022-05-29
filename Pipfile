@@ -10,6 +10,8 @@ Flask-SQLAlchemy = "*"
 WTForms = "*"
 python-dotenv = "*"
 Flask-Cors = "*"
+flask-jwt-extended = "*"
+flask-migrate = "*"
 
 [dev-packages]
 
