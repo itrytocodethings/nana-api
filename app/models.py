@@ -16,7 +16,7 @@ class User(db.Model):
             'username': self.username,
             'email': self.email,
             'password': self.password,
-            'notes': list(map(lambda note: note.serailzie(), self.notes))
+            'notes': list(map(lambda note: note.serialize(), self.notes))
         }
 
     def __repr__(self):

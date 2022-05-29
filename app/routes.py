@@ -9,10 +9,12 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 def register():
     """Register function receives username, email, password. Validates and inserts record into DB"""
     req = request.get_json()
+
     user = User.query.filter_by(username=req['username']).first() or User.query.filter_by(email=req['email']).first()
     if (req['username'] and req['email'] and req['password']) and user:
         resp = f"{req['username']} already taken." if user.username == req['username'] else f"{user.email} already registered."
         return jsonify(resp), 409
+
     new_user = User(username=req['username'], email=req['email'], password=hashpass(req['password']))
     db.session.add(new_user)
     db.session.commit()
@@ -31,8 +33,25 @@ def generate_token():
     
     # create a new token with user id inside
     access_token = create_access_token(identity=user.id)
-    return jsonify({"token": access_token, "user_id": user.id})
+    return jsonify({"token": access_token, "user_id": user.id}), 200
 
+@app.route('/api/note', methods=['POST'])
+@jwt_required()
+def note():
+    current_user_id = get_jwt_identity() #get user id from token
+    user = User.query.get(current_user_id)
+    req = request.get_json()
+    new_note = Note(note_title=req['title'], note_body=req['body'], plain_text=req['plain_text'], owner_id=user.id)
+    db.session.add(new_note)
+    db.session.commit()
+    # returns the current users updated list of notes.
+    return jsonify(user.serialize()['notes'])
+
+@app.route('/api/note/<int:note_id>', methods=['GET', 'PUT','DELETE'])
+@jwt_required()
+def handle_note():
+    # handle note getting, editing and deleting
+    return 'hello world'
 
 @app.route('/')
 @app.route('/index')
