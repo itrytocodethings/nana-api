@@ -10,6 +10,7 @@ def register():
     """Register function receives username, email, password. Validates and inserts record into DB"""
     req = request.get_json()
 
+    # does user exist? checking by email or username
     user = User.query.filter_by(username=req['username']).first() or User.query.filter_by(email=req['email']).first()
     if (req['username'] and req['email'] and req['password']) and user:
         resp = f"{req['username']} already taken." if user.username == req['username'] else f"{user.email} already registered."
@@ -33,7 +34,7 @@ def generate_token():
     
     # create a new token with user id inside
     access_token = create_access_token(identity=user.id)
-    return jsonify({"token": access_token, "user_id": user.id}), 200
+    return jsonify({"token": access_token, "user_id": user.id, 'user_obj:': user.serialize()}), 200
 
 @app.route('/api/note', methods=['POST'])
 @jwt_required()

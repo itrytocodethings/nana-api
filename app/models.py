@@ -15,7 +15,6 @@ class User(db.Model):
             'id': self.id,
             'username': self.username,
             'email': self.email,
-            'password': self.password,
             'notes': list(map(lambda note: note.serialize(), self.notes))
         }
 
