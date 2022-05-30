@@ -13,6 +13,8 @@ Flask-Cors = "*"
 flask-jwt-extended = "*"
 flask-migrate = "*"
 gunicorn = "*"
+psycopg2 = "*"
+
 
 [dev-packages]
 
