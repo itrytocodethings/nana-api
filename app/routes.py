@@ -50,9 +50,18 @@ def note():
 
 @app.route('/api/note/<int:note_id>', methods=['GET', 'PUT','DELETE'])
 @jwt_required()
-def handle_note():
-    # handle note getting, editing and deleting
-    return 'hello world'
+def handle_note(note_id):
+    req = request.get_json()
+    if request.method == 'PUT':
+        note = Note.query.get(note_id)
+        user = User.query.get(get_jwt_identity()) #current user
+        for key in req.keys():
+            setattr(note, key, req[key]) #sets a named attribute on instance of Note.
+            db.session.commit()
+        return jsonify(user.serialize()['notes'])
+    if request.method == 'DELETE':
+        return 'DELETE'
+
 
 @app.route('/api/u', methods=['GET'])
 @jwt_required()
