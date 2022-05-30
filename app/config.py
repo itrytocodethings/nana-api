@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from datetime import timedelta
 
 load_dotenv()
+print(os.getenv('DATABASE_URL'))
 
 SQLALCHEMY_DATABASE_URI=os.getenv('DATABASE_URL').replace('postgre', 'postgresql')
 SQLALCHEMY_TRACK_MODIFICATIONS=False
