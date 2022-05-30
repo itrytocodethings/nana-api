@@ -34,7 +34,7 @@ def generate_token():
     
     # create a new token with user id inside
     access_token = create_access_token(identity=user.id)
-    return jsonify({"token": access_token, "user_id": user.id, 'user_obj:': user.serialize()}), 200
+    return jsonify({"token": access_token, "user_id": user.id, "user": user.serialize()}), 200
 
 @app.route('/api/note', methods=['POST'])
 @jwt_required()
@@ -42,7 +42,7 @@ def note():
     current_user_id = get_jwt_identity() #get user id from token
     user = User.query.get(current_user_id)
     req = request.get_json()
-    new_note = Note(note_title=req['title'], note_body=req['body'], plain_text=req['plain_text'], owner_id=user.id)
+    new_note = Note(note_title=req['note_title'], note_body=req['note_body'], plain_text=req['note_plain_text'], owner_id=user.id)
     db.session.add(new_note)
     db.session.commit()
     # returns the current users updated list of notes.
@@ -53,6 +53,12 @@ def note():
 def handle_note():
     # handle note getting, editing and deleting
     return 'hello world'
+
+@app.route('/api/u', methods=['GET'])
+@jwt_required()
+def get_user():
+    user = User.query.get(get_jwt_identity())
+    return jsonify(user.serialize())
 
 @app.route('/')
 @app.route('/index')
