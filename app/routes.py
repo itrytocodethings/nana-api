@@ -42,7 +42,7 @@ def note():
     current_user_id = get_jwt_identity() #get user id from token
     user = User.query.get(current_user_id)
     req = request.get_json()
-    new_note = Note(note_title=req['note_title'], note_body=req['note_body'], plain_text=req['note_plain_text'], owner_id=user.id)
+    new_note = Note(note_title=req['note_title'], note_body=req['note_body'], plain_text=req['plain_text'], owner_id=user.id)
     db.session.add(new_note)
     db.session.commit()
     # returns the current users updated list of notes.
