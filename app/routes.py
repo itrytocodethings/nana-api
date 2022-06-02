@@ -12,12 +12,12 @@ def register():
     req = request.get_json()
 
     # does user exist? checking by email or username
-    user = User.query.filter_by(username=req['username']).first() or User.query.filter_by(email=req['email']).first()
+    user = User.query.filter_by(username=req['username'].lower()).first() or User.query.filter_by(email=req['email'].lower()).first()
     if (req['username'] and req['email'] and req['password']) and user:
-        resp = f"{req['username']} already taken." if user.username == req['username'] else f"{user.email} already registered."
+        resp = f"{req['username'].title()} already taken." if user.username == req['username'].lower() else f"{user.email} already registered."
         return jsonify(resp), 409
 
-    new_user = User(username=req['username'], email=req['email'], password=hashpass(req['password']))
+    new_user = User(username=req['username'].lower(), email=req['email'].lower(), password=hashpass(req['password']))
     db.session.add(new_user)
     db.session.commit()
     return new_user.serialize(), 200
@@ -28,7 +28,7 @@ def generate_token():
     req = request.get_json()
 
     # verify username & password
-    user = User.query.filter_by(username=req['username']).first()
+    user = User.query.filter_by(username=req['username'].lower()).first()
 
     if user is None or not verifypass(req['password'], user.password):
         return jsonify({'message': 'Invalid username/password combination'}), 401
