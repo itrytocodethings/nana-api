@@ -1,4 +1,5 @@
 import json
+from webbrowser import get
 from app import app, db
 from flask import render_template, redirect, jsonify, request
 from app.util import hashpass, verifypass
@@ -48,19 +49,26 @@ def note():
     # returns the current users updated list of notes.
     return jsonify(user.serialize()['notes'])
 
-@app.route('/api/note/<int:note_id>', methods=['GET', 'PUT','DELETE'])
+@app.route('/api/note/<int:note_id>', methods=['PUT','DELETE'])
 @jwt_required()
 def handle_note(note_id):
-    req = request.get_json()
     if request.method == 'PUT':
+        req = request.get_json()
         note = Note.query.get(note_id)
         user = User.query.get(get_jwt_identity()) #current user
         for key in req.keys():
-            setattr(note, key, req[key]) #sets a named attribute on instance of Note.
+            #sets a named attribute on instance of Note. Could be one or two attributes of the note. Either or. Title or Body.
+            setattr(note, key, req[key]) 
             db.session.commit()
         return jsonify(user.serialize()['notes'])
+
     if request.method == 'DELETE':
-        return 'DELETE'
+        # get current logged in user, get current note, delte note from db and return updated array of notes.
+        user = User.query.get(get_jwt_identity())
+        note = Note.query.get(note_id)
+        db.session.delete(note)
+        db.session.commit()
+        return jsonify(user.serialize()['notes'])
 
 
 @app.route('/api/u', methods=['GET'])
